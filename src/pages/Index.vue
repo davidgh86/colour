@@ -1,12 +1,21 @@
 <template>
-  <q-page class="flex flex-center">
-    <div id="overlay">
-      <img
-        :src="imageFile"
-      >
+  <div>
+    <div class="row">
+      <div id="overlay">
+        <!-- <img :src="imageFile" style="position:absolute; top:0; left:0;"> -->
+        <div id="overin" :style="{ backgroundImage: 'url(\'' + imageFile + '\')' }"></div>
+      </div>
     </div>
-    <div v-html="svg" styel="z-index: 9;" id="overin"></div>
-  </q-page>
+      <div class="row">
+        <q-btn-toggle
+        v-model="selectedColor"
+        toggle-color="primary"
+        push
+        glossy
+        :options="buttonColors"
+      ></q-btn-toggle> {{ selectedColor }}
+    </div>
+  </div>
 </template>
 
 <script>
@@ -18,48 +27,79 @@ export default {
 
   data() {
     return {
-      imageFile: "img/451542_16.jpg",
+      imageFile: require("../assets/451542_16.jpg"),
       titlea: 'Misco',
       svg: '',
-      dictColors: {}
+      dictColors: {},
+      dictColorsIndex: [],
+      buttonColors: [],
+      selectedColor: ""
     };    
   },
-  methods: {
-    getThresholds: function(num){
-      let step = 256 / num
-      
-      let result = []
-
-      for (i=step; i<256; i=i+step){
-          result.push(i)
+  watch: {
+    selectedColor: function (newColor, oldColor){
+      if (oldColor){
+        let oldElements = document.querySelectorAll('[blockColorCode="'+ oldColor +'", [blockColorPainted=false]')
+        for (let element of oldElements){
+          this.unselectElement(element)
+        }
       }
-      return result;
+      let newElements = document.querySelectorAll('[blockColorCode="'+ newColor +'"], [blockColorPainted=false]')
+      for (let element of newElements){
+        this.selectElement(element)
+      }
+    }
+  },
+  methods: {
+    unselectElement: function(element){
+      element.setAttribute("fill", "rgb(255,255,255)")
+      element.setAttribute("stroke", "rgb(255,255,255)")
+      element.removeEventListener('click', this.onClickBlockEvent)
+    },
+    selectElement: function(element){
+      element.setAttribute("fill", "rgb(192,192,192)")
+      element.setAttribute("stroke", "rgb(192,192,192)")
+      element.addEventListener('click', this.onClickBlockEvent)
+    },
+    onClickBlockEvent: function(event){
+      console.log("------>>>>>>> click")
+      let element = event.target
+      element.setAttribute("opacity", 0)
+      element.setAttribute("blockColorPainted", true)
+      //'use strict';
+      element.removeEventListener('click', this.onClickBlockEvent)
     },
     loadSvg: function(svgTxt){
       let element = document.getElementById("overin")
       element.innerHTML = svgTxt
-      // element.children[0].addEventListener("click", (event)=> {
-      //   alert("hola")
-      // })
       let childNodes = element.children[0].children
       for (let i=0; i<childNodes.length; i++){
         let childNode = childNodes[i]
         childNode.setAttribute("blockId", i)
-        if (!this.dictColors[childNode.attributes["fill"].value]){
-          this.dictColors[childNode.attributes["fill"].value] = []
+        let color = childNode.attributes["fill"].value
+       childNode.setAttribute("blockColorCode", color)
+        childNode.setAttribute("blockColorPainted", false)
+        if (!this.dictColors[color]){
+          this.dictColors[color] = []
+          this.dictColorsIndex.push(color)
         }else{
-          this.dictColors[childNode.attributes["fill"].value].push(i)
-          
+          this.dictColors[color].push(i)
         }
-        childNodes[i].attributes["fill"].value = "rgb(255,255,255)"
-        childNodes[i].attributes["stroke"].value = "rgb(255,255,255)"
+        childNodes[i].setAttribute("fill", "rgb(255,255,255)")
+        childNodes[i].setAttribute("stroke", "rgb(255,255,255)")
       }
-      document.getElementById("overin").addEventListener("click", (event)=>{
-        if (!event.target.attributes["opacity"] || event.target.attributes["opacity"].value!=0){
-          event.target.attributes["opacity"].value = 0
-          event.target.preventDefault()
+      this.initButtonColors()
+    },
+    initButtonColors: function(){
+      let result = []
+      for (let i=0; i<this.dictColorsIndex.length; i++){
+        let item = {
+          label: i+1,
+          value: this.dictColorsIndex[i]
         }
-      })
+        result.push(item)
+      }
+      this.buttonColors = result
     }
   },
   created () {
@@ -70,15 +110,6 @@ export default {
   }
 }
 </script>
-<style scoped>
-#overlay{
-  position: fixed;
-  margin-left: auto; 
-  margin-right: auto; /* HORIZONTAL CENTER */
-}
-#overin {
-  margin-left: auto; 
-  margin-right: auto; /* HORIZONTAL CENTER */
-  z-index: 2;
-}
+<style>
+
 </style>
