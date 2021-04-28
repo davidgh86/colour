@@ -39,12 +39,12 @@ export default {
   watch: {
     selectedColor: function (newColor, oldColor){
       if (oldColor){
-        let oldElements = document.querySelectorAll('[blockColorCode="'+ oldColor +'", [blockColorPainted=false]')
+        let oldElements = document.querySelectorAll('[blockColorCode="'+ oldColor +'"][blockColorPainted=false]')
         for (let element of oldElements){
           this.unselectElement(element)
         }
       }
-      let newElements = document.querySelectorAll('[blockColorCode="'+ newColor +'"], [blockColorPainted=false]')
+      let newElements = document.querySelectorAll('[blockColorCode="'+ newColor +'"][blockColorPainted=false]')
       for (let element of newElements){
         this.selectElement(element)
       }
@@ -66,7 +66,7 @@ export default {
       let element = event.target
       element.setAttribute("opacity", 0)
       element.setAttribute("blockColorPainted", true)
-      //'use strict';
+      'use strict';
       element.removeEventListener('click', this.onClickBlockEvent)
     },
     loadSvg: function(svgTxt){
