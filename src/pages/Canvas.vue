@@ -19,6 +19,7 @@
     <div class="row">
       <q-btn color="primary" label="Paint" v-on:click="paintAll"></q-btn>
       <q-btn color="primary" label="Photo/Cartoon" v-on:click="switchPhoto"></q-btn>
+      <q-btn color="primary" label="Switch lines" v-on:click="switchLines"></q-btn>
     </div>
   </div>
 </template>
@@ -40,7 +41,8 @@ export default {
       dictColorsIndex: [],
       buttonColors: [],
       selectedColor: "",
-      type: "cartoon"
+      photo: false,
+      lines: true
     };    
   },
   watch: {
@@ -60,6 +62,9 @@ export default {
   methods: {
     getNotPaintedBlocksByColor(color){
       return document.querySelectorAll('[blockColorCode="'+ color +'"][blockColorPainted=false]')
+    },
+    getLineElements(){
+      return document.querySelectorAll('[blockColorCode="rgb(0,0,0)"]')
     },
     unselectElement: function(element){
       element.setAttribute("fill", "rgb(255,255,255)")
@@ -98,9 +103,12 @@ export default {
           }else{
             this.dictColors[color].push(i)
           }
-          childNodes[i].setAttribute("fill", "rgb(255,255,255)")
-          childNodes[i].setAttribute("stroke", "rgb(255,255,255)")
+          childNode.setAttribute("fill", "rgb(255,255,255)")
+          childNode.setAttribute("stroke", "rgb(255,255,255)")
         } else {
+          if (!this.lines){
+            childNode.setAttribute("opacity", 0)
+          }
           childNode.setAttribute("blockColorPainted", true)
         }
       }
@@ -133,13 +141,27 @@ export default {
       }, 1000)
     },
     switchPhoto: function() {
-      if (this.type == "cartoon"){
-        this.imageFile = "http://localhost:5000/photo/"+this.imageUid
-        this.type = "photo"
+      if (this.photo == true){
+        this.setCartoon()
       }else {
-        this.imageFile = "http://localhost:5000/cartoon/"+this.imageUid
-        this.type = "cartoon"
+        this.setPhoto()
       }
+    },
+    switchLines: function(){
+      let lineElements = this.getLineElements()
+      let opacity = this.lines?0:1
+      for (let element of lineElements){
+        element.setAttribute("opacity", opacity)
+      }
+      this.lines=!this.lines
+    },
+    setCartoon: function(){
+      this.imageFile = "http://localhost:5000/cartoon/"+this.imageUid
+      this.photo = false
+    },
+    setPhoto: function(){
+      this.imageFile = "http://localhost:5000/photo/"+this.imageUid
+      this.photo = true
     }
   },
   created () {
@@ -149,8 +171,7 @@ export default {
     let imageId = this.$route.params.id
     this.imageUid = imageId
 
-    this.imageFile = "http://localhost:5000/cartoon/"+imageId
-    this.type = "cartoon"
+    this.setCartoon()
 
     this.$axios.get("svg/"+imageId).then(response => {
       this.loadSvg(response.data)
