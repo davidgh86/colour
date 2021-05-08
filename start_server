@@ -3,4 +3,4 @@
 git pull
 quasar build -m pwa
 cd /colour/dist/pwa
-quasar serve --proxy ../../proxy-file.js
+quasar serve --proxy ../../proxy-file.js --hostname 0.0.0.0

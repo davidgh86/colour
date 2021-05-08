@@ -28,3 +28,5 @@ See [Configuring quasar.conf.js](https://v1.quasar.dev/quasar-cli/quasar-conf-js
 ### Docker build
 
 docker build -t colour-front-server --build-arg github_user=${github_user} --build-arg github_password=${github_password} .
+
+docker run -d --name colour-front-container -p 4000:4000 colour-front-server
