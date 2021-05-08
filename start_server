@@ -1,0 +1,6 @@
+#!/bin/bash
+
+git pull
+quasar build -m pwa
+cd /colour/dist/pwa
+quasar serve --proxy ../../proxy-file.js
