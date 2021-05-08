@@ -156,11 +156,11 @@ export default {
       this.lines=!this.lines
     },
     setCartoon: function(){
-      this.imageFile = "http://localhost:5000/cartoon/"+this.imageUid
+      this.imageFile = "/api/cartoon/"+this.imageUid
       this.photo = false
     },
     setPhoto: function(){
-      this.imageFile = "http://localhost:5000/photo/"+this.imageUid
+      this.imageFile = "/api/photo/"+this.imageUid
       this.photo = true
     }
   },
@@ -173,7 +173,7 @@ export default {
 
     this.setCartoon()
 
-    this.$axios.get("svg/"+imageId).then(response => {
+    this.$axios.get("/api/svg/"+imageId).then(response => {
       this.loadSvg(response.data)
     })
   }

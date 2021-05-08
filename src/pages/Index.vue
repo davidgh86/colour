@@ -27,7 +27,7 @@
 
         formData.append('file', this.file);
 
-        this.$axios.post( '/upload',
+        this.$axios.post( '/api/upload',
             formData,
             {
             headers: {
