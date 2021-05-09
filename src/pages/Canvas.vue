@@ -20,6 +20,7 @@
       <q-btn color="primary" label="Paint" v-on:click="paintAll"></q-btn>
       <q-btn color="primary" label="Photo/Cartoon" v-on:click="switchPhoto"></q-btn>
       <q-btn color="primary" label="Switch lines" v-on:click="switchLines"></q-btn>
+      <q-btn color="primary" label="New photo" v-on:click="goToIndex"></q-btn>
     </div>
   </div>
 </template>
@@ -162,6 +163,9 @@ export default {
     setPhoto: function(){
       this.imageFile = "/api/photo/"+this.imageUid
       this.photo = true
+    },
+    goToIndex: function(){
+      this.$router.push('/')
     }
   },
   created () {
