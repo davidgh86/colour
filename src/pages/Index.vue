@@ -5,6 +5,7 @@
         <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
       </label>
       <button v-on:click="submitFile()">Submit</button>
+      <img v-if="file" :src="filePath"/>
     </div>
   </div>
 </template>
@@ -14,7 +15,8 @@
   export default {
     data(){
       return {
-        file: ''
+        file: '',
+        filePath: ''
       }
     },
 
@@ -47,6 +49,7 @@
       */
       handleFileUpload(){
         this.file = this.$refs.file.files[0];
+        this.filePath = URL.createObjectURL(this.file);
       }
     }
   }
